@@ -1,5 +1,5 @@
 const path = require('path');
-const adbPath = path.join(__dirname, '../platform-tools', 'adb.sh');
+const adbPath = path.join(__dirname, '../platform-tools', 'adb.exe');
 
 const adb = require('adbkit');
 const { delay } = require('../helpers/functionHelper');
