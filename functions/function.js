@@ -3,7 +3,7 @@ const QRCode = require('qrcode');
 const { QRPay } = require('vietnam-qr-pay');
 const fs = require('fs');
 const axios = require("axios");
-
+const dataPath = './localdata.json';
 
 module.exports = {
 
@@ -46,5 +46,25 @@ module.exports = {
         .catch(err => { console.error('Error downloading QR code:', err); reject(false) })
     })
     return;
+  },
+
+  saveLocalData: async (data) => {
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+    console.log('Update localdata successfully.');
+  },
+
+  getLocalData: async () => {
+    if (!fs.existsSync(dataPath)) {
+      const defaultData = { pusher_key: "" };
+      fs.writeFileSync(dataPath, JSON.stringify(defaultData, null, 2), 'utf-8');
+      console.log('File created with default content.');
+      return defaultData;
+    } else {
+      const fileContent = fs.readFileSync(dataPath, 'utf-8');
+      const jsonData = JSON.parse(fileContent);
+      console.log('File content:', jsonData);
+      return jsonData;
+    }
   }
+
 }

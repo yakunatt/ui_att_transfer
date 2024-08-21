@@ -30,3 +30,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 # node_modules
+
+localdata.json
+images/*.png

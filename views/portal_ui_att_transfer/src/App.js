@@ -1,8 +1,8 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 import { getListDevice, patchActionServer, } from './api/adb';
-import { getVersion } from './api/bridge';
-import { Link } from '@mui/icons-material';
+import { getVersion, postLocalData } from './api/bridge';
+import { Key, KeyRounded, Link } from '@mui/icons-material';
 import Loading from './components/Loading';
 
 import {
@@ -92,8 +92,9 @@ function App() {
           <Stack direction="row" alignItems="center" spacing={2}>
             <img src="./logo_att.png" alt="logo" style={{ width: 40, height: 40 }} />
             <Typography variant="h5" fontWeight="bold" color="#172B4D">
-              Ui Automator {newVersion || ''}
+              Ui Manual {newVersion || ''}
             </Typography>
+            <SetupPusher setMutate={setMutate} />
           </Stack>
           <Divider sx={{ mt: 2 }} />
         </Grid>
@@ -291,7 +292,6 @@ function ConnectServer({ item, setMutate }) {
   const [isEdit, setEdit] = useState(false);
   const [textTitle, setTextTitle] = useState(localStorage.getItem(item.id + "-auth") || '');
 
-
   const saveHandle = async () => {
     localStorage.setItem(item.id + "-auth", textTitle.trim())
     setEdit((prev) => !prev);
@@ -313,7 +313,6 @@ function ConnectServer({ item, setMutate }) {
 
   return (
     <>
-
       <Stack direction="row" alignItems="center" spacing={1}>
         {isEdit ? (
           <>
@@ -336,6 +335,62 @@ function ConnectServer({ item, setMutate }) {
             <Tooltip title="Kết nối server" arrow>
               <IconButton size="small" onClick={() => setEdit((prev) => !prev)}>
                 <Link color="primary" sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+      </Stack>
+    </>
+  );
+}
+
+function SetupPusher({ setMutate }) {
+  const [isEdit, setEdit] = useState();
+  const [textTitle, setTextTitle] = useState('');
+
+  const saveHandle = async () => {
+    setEdit((prev) => !prev);
+    setMutate((prev) => !prev);
+    const data = { pusher_key: textTitle.trim() }
+
+    const result = await postLocalData(data);
+
+    if (result?.valid == true) {
+      return swalToast('success', 'Thành công');
+    } else {
+      return swalToast('error', "Lỗi hệ thống");
+    }
+  };
+
+  return (
+    <>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        {isEdit ? (
+          <>
+            <TextField
+              variant="outlined"
+              placeholder="key pusher"
+              size="small"
+              sx={{ width: "180px" }}
+              value={textTitle}
+              onChange={(event) => setTextTitle(event.target.value)}
+            />
+            <Tooltip title="Lưu">
+              <IconButton size="small" onClick={saveHandle}>
+                <SaveIcon color="primary" sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Hủy" arrow>
+              <IconButton size="small" onClick={() => setEdit((prev) => !prev)}>
+                <CancelIcon color="error" sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+          </>
+        ) : (
+          <>
+            <Tooltip title="Cấu hình key pusher" arrow>
+              <IconButton size="small" onClick={() => setEdit((prev) => !prev)}>
+                <KeyRounded color="primary" sx={{ fontSize: 16 }} />
               </IconButton>
             </Tooltip>
           </>
