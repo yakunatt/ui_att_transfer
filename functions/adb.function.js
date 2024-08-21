@@ -66,12 +66,7 @@ module.exports = {
   },
 
   sendFile: async (device_id, localPath, devicePath) => {
-    client.push(device_id, localPath, devicePath)
-      .then(transfer => new Promise((resolve, reject) => {
-        transfer.on('progress', stats => console.log(`[${device_id}] Pushing ${stats.bytesTransferred}/${stats.bytesTotal}`));
-        transfer.on('end', () => { console.log('Tệp Push thành công!'), resolve() });
-        transfer.on('error', () => { console.log('====> Lỗi Push file qr!'), reject });
-      }));
+    await client.push(device_id, localPath, devicePath)
     await delay(500);
   },
 

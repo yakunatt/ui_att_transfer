@@ -65,8 +65,8 @@ server.listen(port, async () => {
       return;
     }
 
-    let localPath = path.join(__dirname, 'images', "ANH" + '1qr.jpg')
-    let devicePath = '/sdcard/Pictures/Screenshots/' + 'ANH1qr.jpg';
+    let localPath = path.join(__dirname, 'images', device_id + '_qr.png')
+    let devicePath = '/sdcard/' + device_id + '_qr.png';
 
     if (vietqr_url) {
       await downloadQr(vietqr_url, localPath);

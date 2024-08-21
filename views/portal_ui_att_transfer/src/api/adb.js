@@ -4,7 +4,7 @@ export const endpoints = {
   key: 'adb',
   listDevice: '/list-devices',
   actionADB: '/action-adb',
-  server: 'http://localhost:5000/everyone/bankcard'
+  server: 'https://api.attpay.org/everyone/bankcard'
 };
 
 export async function getListDevice() {

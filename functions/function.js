@@ -38,10 +38,13 @@ module.exports = {
     });
   },
   downloadQr: async (qrCodeUrl, localFilePath) => {
-    return await axios({ url: qrCodeUrl, responseType: 'stream', })
-      .then(async (response) => await response.data.pipe(fs.createWriteStream(localFilePath))
-        .on('finish', async () => { console.log('QR code downloaded.'); return true })
-        .on('error', err => { console.error('Error saving QR: ', err); return false }))
-      .catch(err => { console.error('Error downloading QR code:', err); return false })
+    await new Promise((resolve, reject) => {
+      axios({ url: qrCodeUrl, responseType: 'stream', })
+        .then((response) => response.data.pipe(fs.createWriteStream(localFilePath))
+          .on('finish', () => { console.log('QR code downloaded.'); resolve(true) })
+          .on('error', (err) => { console.error('Error saving QR: ', err); reject(false) }))
+        .catch(err => { console.error('Error downloading QR code:', err); reject(false) })
+    })
+    return;
   }
 }
