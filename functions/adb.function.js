@@ -66,10 +66,11 @@ module.exports = {
   },
 
   sendFile: async (device_id, localPath, devicePath) => {
-    await client.push(device_id, localPath, devicePath)
+    await client.push(device_id, localPath, devicePath);
     await delay(500);
+    await client.shell(device_id, `am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://${devicePath}`);
+    await delay(100);
   },
-
 };
 
 const percentSize = (percent, screenSize) => {
