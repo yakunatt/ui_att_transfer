@@ -1,2 +1,2 @@
 @echo off
-pm2 log ui
+pm2 log deposit_ui

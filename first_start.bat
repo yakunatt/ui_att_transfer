@@ -1,2 +1,2 @@
 @echo off
-pm2 start server.js --name ui
+pm2 start server.js --name deposit_uiui

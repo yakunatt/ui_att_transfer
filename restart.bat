@@ -1,2 +1,2 @@
 @echo off
-pm2 restart ui
+pm2 restart deposit_ui
