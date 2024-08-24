@@ -12,7 +12,6 @@ export const typeText = async (data, setLoading) => {
 
 export const typePortKey = async (item) => {
   const data = await swalInputPortKey();
-  console.log(data);
   if (data) {
     const body = {
       port: data?.[0].trim(),

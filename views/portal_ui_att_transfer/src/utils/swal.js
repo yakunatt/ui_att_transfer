@@ -72,7 +72,6 @@ export const swalInputPortKey = async (title, inputLabel, inputPlaceholder) => {
     }
   });
   if (formValues) {
-    Swal.fire(JSON.stringify(formValues));
     return formValues;
   } else {
     return null;

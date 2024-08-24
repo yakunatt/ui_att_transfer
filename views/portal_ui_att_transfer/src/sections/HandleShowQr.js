@@ -13,9 +13,7 @@ const HandleShowQr = ({ item }) => {
     const handel = async () => {
       if (expand) {
         const response = await getQrDevice(item.id);
-        console.log(response)
-        if (response?.result)
-          setQrcode(response?.result ?? 'https://media.tenor.com/tga0EoNOH-8AAAAC/loading-load.gif');
+        setQrcode(response?.result ?? 'https://media.tenor.com/tga0EoNOH-8AAAAC/loading-load.gif');
       }
     };
     const intervalId = setInterval(handel, 1500);
