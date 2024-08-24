@@ -1,6 +1,7 @@
 const { ver } = require('../config');
-const { saveLocalData } = require('../functions/function');
+const { saveLocalData, setDataJson } = require('../functions/function');
 const responseHelper = require('../helpers/responseHelper');
+const path = require('path');
 
 module.exports = {
   getVersion: async (req, res) => {
@@ -8,7 +9,9 @@ module.exports = {
   },
 
   localdata: async (req, res) => {
-    await saveLocalData(req.body);
+    let localPath = path.join(__dirname, '../database', 'localdata.json');
+    await setDataJson(localPath, req.body);
+
     responseHelper(res, 200, { valid: true });
   },
 };

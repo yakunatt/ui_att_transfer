@@ -33,7 +33,7 @@ import PhonelinkOffIcon from '@mui/icons-material/PhonelinkOff';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { swalToast } from './utils/swal';
-import { connect, enter, home, typeText } from './services/handle.service';
+import { connect, enter, home, typePortKey, typeText } from './services/handle.service';
 import { blue } from '@mui/material/colors';
 import HandleBidv from './sections/bank_handle/HandleBidv';
 import HandleMb from './sections/bank_handle/HandleMb';
@@ -43,6 +43,7 @@ import HandleAbb from './sections/bank_handle/HandleAbb';
 import HandleVcbNew from './sections/bank_handle/HandleVcbNew';
 import { getActionDevice } from './api/device';
 import MacroComp from './components/Macro';
+import HandleShowQr from './sections/HandleShowQr';
 
 function App() {
   const [devices, setDevices] = useState([]);
@@ -120,7 +121,7 @@ function App() {
               const Y = item.screenSize.split('x')[1];
 
               return (
-                <Grid key={index} item xs={12} sm={6} md={4} lg={2.4}>
+                <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
                   <Card>
                     <CardHeader
                       avatar={
@@ -137,54 +138,71 @@ function App() {
                       }
                     />
                     <CardContent>
-                      <Stack justifyContent="center" alignItems="center" spacing={1}>
-                        <Button variant="outlined" color="primary" fullWidth onClick={() => typeText({ device_id: item.id }, setLoading)}>
-                          Nhập ký tự
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          fullWidth
-                          onClick={async () => {
-                            setLoading(true);
-                            await enter({ device_id: item.id });
-                            setLoading(false);
-                          }}
-                        >
-                          Enter
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          fullWidth
-                          onClick={async () => {
-                            setLoading(true);
-                            await home({ device_id: item.id });
-                            setLoading(false);
-                          }}
-                        >
-                          Home
-                        </Button>
-                      </Stack>
-
-                      <Divider sx={{ mt: 2, mb: 2 }} />
-                      <Stack justifyContent="center" alignItems="center" spacing={1}>
-                        <Tooltip title="Điều khiển/thao tác thiết bị" arrow>
+                      <Divider sx={{ mb: 2 }} />
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
                           <Button
-                            variant="outlined"
-                            color="secondary"
                             fullWidth
+                            variant="outlined"
+                            fontSize={'11'}
+                            color="primary"
+                            onClick={() =>
+                              typeText({ device_id: item.id }, setLoading)}>
+                            Nhập ký tự
+                          </Button>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            fontSize={'11'}
                             onClick={async () => {
                               setLoading(true);
-                              await connect({ device_id: item.id, title });
+                              await enter({ device_id: item.id });
                               setLoading(false);
                             }}
-                            startIcon={<LaunchIcon />}
                           >
-                            Mở thiết bị
+                            Enter
                           </Button>
-                        </Tooltip>
-                      </Stack>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Tooltip title="Điều khiển/thao tác thiết bị" arrow>
+                            <Button
+                              variant="outlined"
+                              color="secondary"
+                              fullWidth
+                              fontSize={'11'}
+                              onClick={async () => {
+                                setLoading(true);
+                                await connect({ device_id: item.id, title });
+                                setLoading(false);
+                              }}
+                              startIcon={<LaunchIcon />}
+                            >
+                              Mở máy
+                            </Button>
+                          </Tooltip>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            fontSize={'11'}
+                            onClick={async () => {
+                              setLoading(true);
+                              await home({ device_id: item.id });
+                              setLoading(false);
+                            }}
+                          >
+                            Home
+                          </Button>
+                        </Grid>
+                      </Grid>
+
+                      <Divider sx={{ mt: 2, mb: 2 }} />
+                      <HandleShowQr item={item} />
                       <Divider sx={{ mt: 2, mb: 2 }} />
                       <HandleBidv item={item} X={X} Y={Y} setLoading={setLoading} />
                       <HandleMb item={item} X={X} Y={Y} setLoading={setLoading} />
@@ -289,56 +307,15 @@ const actionsDial = [
   { icon: <PowerSettingsNewIcon color="error" />, name: 'Restart tool', typeHandle: 'restart' }
 ];
 function ConnectServer({ item, setMutate }) {
-  const [isEdit, setEdit] = useState(false);
-  const [textTitle, setTextTitle] = useState(localStorage.getItem(item.id + "-auth") || '');
-
-  const saveHandle = async () => {
-    localStorage.setItem(item.id + "-auth", textTitle.trim())
-    setEdit((prev) => !prev);
-    setMutate((prev) => !prev);
-    const data = {
-      auth: textTitle.trim(),
-      device_id: item.id,
-      device_screen: item.screenSize
-    }
-
-    const result = await patchActionServer(data);
-
-    if (result?.valid == true) {
-      return swalToast('success', 'Thành công');
-    } else {
-      return swalToast('error', "Lỗi kết nối server");
-    }
-  };
 
   return (
     <>
       <Stack direction="row" alignItems="center" spacing={1}>
-        {isEdit ? (
-          <>
-            <TextField
-              variant="outlined"
-              placeholder="Cổng (port)"
-              size="small"
-              sx={{ width: "50px" }}
-              value={textTitle}
-              onChange={(event) => setTextTitle(event.target.value)}
-            />
-            <Tooltip title="Lưu">
-              <IconButton size="small" onClick={saveHandle}>
-                <SaveIcon color="primary" sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Tooltip>
-          </>
-        ) : (
-          <>
-            <Tooltip title="Kết nối server" arrow>
-              <IconButton size="small" onClick={() => setEdit((prev) => !prev)}>
-                <Link color="primary" sx={{ fontSize: 16 }} />
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
+        <Tooltip title="Kết nối server" arrow>
+          <IconButton size="small" onClick={() => typePortKey(item)}>
+            <Link color="primary" sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Tooltip>
       </Stack>
     </>
   );

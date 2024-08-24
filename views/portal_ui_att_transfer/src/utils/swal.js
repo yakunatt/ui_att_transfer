@@ -62,6 +62,22 @@ export const swalInputPass = async (title, inputLabel, inputPlaceholder) => {
   }
 };
 
+export const swalInputPortKey = async (title, inputLabel, inputPlaceholder) => {
+  const { value: formValues } = await Swal.fire({
+    title: "Kết nối thẻ",
+    html: `<input id="auth" class="swal2-input" placeholder="Auth"><input id="key" class="swal2-input" placeholder="Key">`,
+    focusConfirm: false,
+    preConfirm: () => {
+      return [document.getElementById("auth").value, document.getElementById("key").value];
+    }
+  });
+  if (formValues) {
+    Swal.fire(JSON.stringify(formValues));
+    return formValues;
+  } else {
+    return null;
+  }
+};
 const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',

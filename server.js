@@ -9,7 +9,7 @@ const { exec } = require('child_process');
 
 const Router = require('./routers');
 const { port } = require('./config');
-const { updateSource, transToQr, downloadQr, getLocalData } = require('./functions/function');
+const { updateSource, transToQr, downloadQr, setDataJson, getDataJson } = require('./functions/function');
 const cronTask = require('./functions/cron.function');
 const { autoRunGnirehtet, stopGnirehtet } = require('./functions/gnirehtet.function');
 const { listDevice, sendFile } = require('./functions/adb.function');
@@ -44,9 +44,10 @@ server.listen(port, async () => {
   const lastReceived = {};
 
   // Khởi tạo file json
-  const localData = await getLocalData();
-  if (localData?.pusher_key !== "") {
-
+  let localPath = path.join(__dirname, 'database', 'localdata.json');
+  const localData = await getDataJson(localPath);
+  if (localData?.pusher_key && localData?.pusher_key !== "") {
+    console.log("---> Listen event on server by Pusher <---");
     var pusher = new Pusher(localData.pusher_key, { cluster: 'ap1' });
     var channel = pusher.subscribe('my-channel');
     channel.bind('my-event', async function (data) {
@@ -61,21 +62,23 @@ server.listen(port, async () => {
 
       const { vietqr_url, device_id, trans_id, bin, account_number, amount, trans_mess } = data;
 
-
       if (!vietqr_url && (!bin || !account_number || !amount || !trans_mess)) {
-        console.log(".......");
+        console.log("Mix Data");
         return;
       }
 
-      let localPath = path.join(__dirname, 'images', device_id + '_qr.png')
-      let devicePath = '/sdcard/' + device_id + '_qr.png';
+      let qrLocalPath = path.join(__dirname, 'images', device_id + '_qr.png')
+      let qrDevicePath = '/sdcard/' + device_id + '_qr.png';
 
       if (vietqr_url) {
-        await downloadQr(vietqr_url, localPath);
+        await downloadQr(vietqr_url, qrLocalPath);
       } else {
-        await transToQr(data, localPath);
+        await transToQr(data, qrLocalPath);
       }
-      await sendFile(device_id, localPath, devicePath);
+      let jsonPath = path.join(__dirname, 'database', device_id + '_url.json')
+
+      await setDataJson(jsonPath, { vietqr_url: vietqr_url, last_time: Date.now() });
+      await sendFile(device_id, qrLocalPath, qrDevicePath);
 
       console.log("Success !!");
     });

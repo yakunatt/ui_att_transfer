@@ -65,6 +65,19 @@ module.exports = {
       console.log('File content:', jsonData);
       return jsonData;
     }
-  }
+  },
+  getDataJson: async (filePath) => {
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const jsonData = JSON.parse(fileContent);
+      console.log('File:', JSON.stringify(jsonData));
+      return jsonData;
+    }
+    return null;
+  },
+  setDataJson: async (filePath, data) => {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    console.log('Update successfully.');
+  },
 
 }
