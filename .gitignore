@@ -33,4 +33,4 @@ yarn-error.log*
 
 localdata.json
 images/*.png
-database/
+database/*json
