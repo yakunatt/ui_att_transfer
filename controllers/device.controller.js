@@ -28,7 +28,7 @@ module.exports = {
       status_code: 200,
       valid: true,
       message: 'Thành công',
-      result: Date.now() - (data?.last_time || 0) < 30000 && data.vietqr_url
+      result: Date.now() - (data?.last_time || 0) < 30000 ? data.vietqr_url : null
     });
   },
 };
