@@ -34,17 +34,3 @@ export async function postActionADB(data) {
     };
   }
 }
-
-export async function patchActionServer(data) {
-  try {
-    const url = endpoints.server;
-    const response = await axios.patch(url, data);
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return {
-      status: false,
-      msg: error.message
-    };
-  }
-}

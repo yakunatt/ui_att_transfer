@@ -1,5 +1,4 @@
-import { patchActionServer } from '../api/adb';
-import { swalInputPass, swalInputPortKey, swalToast } from '../utils/swal';
+import { swalInputPass, swalToast } from '../utils/swal';
 import { actionADB } from './adb.service';
 
 export const typeText = async (data, setLoading) => {
@@ -8,20 +7,6 @@ export const typeText = async (data, setLoading) => {
   setLoading(true);
   await actionADB({ action: 'input', device_id: data.device_id, text: text.trim() });
   setLoading(false);
-};
-
-export const typePortKey = async (item) => {
-  const data = await swalInputPortKey();
-  if (data) {
-    const body = {
-      port: data?.[0].trim(),
-      key: data?.[1].trim(),
-      device_id: item.id,
-      device_screen: item.screenSize
-    }
-    const result = await patchActionServer(body);
-    return result;
-  }
 };
 
 export const enter = async (data) => {

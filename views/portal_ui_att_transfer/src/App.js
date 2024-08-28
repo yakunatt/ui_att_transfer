@@ -1,12 +1,13 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import { getListDevice, patchActionServer, } from './api/adb';
+import { getListDevice, } from './api/adb';
 import { getVersion, postLocalData } from './api/bridge';
 import { Key, KeyRounded, Link } from '@mui/icons-material';
 import Loading from './components/Loading';
 
 import {
   Avatar,
+  Box,
   Button,
   Card,
   CardContent,
@@ -44,6 +45,7 @@ import HandleVcbNew from './sections/bank_handle/HandleVcbNew';
 import { getActionDevice } from './api/device';
 import MacroComp from './components/Macro';
 import HandleShowQr from './sections/HandleShowQr';
+import Swal from 'sweetalert2';
 
 function App() {
   const [devices, setDevices] = useState([]);
@@ -85,6 +87,13 @@ function App() {
     swalToast('success', 'Thành công');
     setMutate((prev) => !prev);
   };
+  const showDevice = (item) => {
+    Swal.fire({
+      icon: "info",
+      title: "Thông tin thiết bị - " + (localStorage.getItem(item.id) || "Ghi chú"),
+      html: `<p>ID: ${item.id}</p><p>Name: ${item.nameDevice}</p><p>Model: ${item.model}</p><p>Size: ${item.screenSize}</p>`
+    })
+  }
 
   return (
     <>
@@ -130,11 +139,17 @@ function App() {
                         </Avatar>
                       }
                       title={<TitleComp title={title} item={item} setMutate={setMutate} />}
-                      action={<ConnectServer item={item} setMutate={setMutate} />}
                       subheader={
-                        <Typography variant="caption" color="GrayText" title={`${item.nameDevice} - ${item.screenSize}`}>
-                          {item.model}
-                        </Typography>
+                        <Box>
+                          <Typography
+                            variant="body"
+                            color="Highlight"
+                            sx={{ cursor: "pointer", fontWeight: "bold" }}
+                            onClick={() => showDevice(item)}
+                            title={`${item.nameDevice} - ${item.screenSize}`}>
+                            {item.id}
+                          </Typography>
+                        </Box>
                       }
                     />
                     <CardContent>
@@ -306,20 +321,6 @@ const actionsDial = [
   { icon: <PhonelinkOffIcon />, name: 'Tắt kết nối ngược', typeHandle: 'stopShare' },
   { icon: <PowerSettingsNewIcon color="error" />, name: 'Restart tool', typeHandle: 'restart' }
 ];
-function ConnectServer({ item, setMutate }) {
-
-  return (
-    <>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <Tooltip title="Kết nối server" arrow>
-          <IconButton size="small" onClick={() => typePortKey(item)}>
-            <Link color="primary" sx={{ fontSize: 16 }} />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-    </>
-  );
-}
 
 function SetupPusher({ setMutate }) {
   const [isEdit, setEdit] = useState();
