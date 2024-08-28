@@ -46,6 +46,7 @@ import { getActionDevice } from './api/device';
 import MacroComp from './components/Macro';
 import HandleShowQr from './sections/HandleShowQr';
 import Swal from 'sweetalert2';
+import { getSetting } from './api/setting';
 
 function App() {
   const [devices, setDevices] = useState([]);
@@ -53,6 +54,7 @@ function App() {
   const [mutate, setMutate] = useState(false);
   const [newVersion, setNewVersion] = useState('');
   const [openDial, setOpenDial] = useState(false);
+  const [qr, setQr] = useState(false);
 
   const handleOpenDial = () => {
     setOpenDial(true);
@@ -67,12 +69,14 @@ function App() {
       setLoading((prev) => !prev);
       const result = await getListDevice();
       const resultVer = await getVersion();
+      const resultSet = await getSetting()
       setLoading((prev) => !prev);
       if (result.status && result.status === false) {
         return swalToast('error', result.msg);
       }
       setNewVersion(resultVer.version || '');
       setDevices(result);
+      setQr(resultSet?.valid);
     };
     callAPI();
   }, [mutate]);
@@ -216,8 +220,12 @@ function App() {
                         </Grid>
                       </Grid>
 
-                      <Divider sx={{ mt: 2, mb: 2 }} />
-                      <HandleShowQr item={item} />
+                      {qr &&
+                        <>
+                          <Divider sx={{ mt: 2, mb: 2 }} />
+                          <HandleShowQr item={item} />
+                        </>
+                      }
                       <Divider sx={{ mt: 2, mb: 2 }} />
                       <HandleBidv item={item} X={X} Y={Y} setLoading={setLoading} />
                       <HandleMb item={item} X={X} Y={Y} setLoading={setLoading} />
